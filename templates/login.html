@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %} Login Page {% endblock%}
+
+
+{% block content %}
+
+login
+
+<div class="container mt-5" style="max-width: 400px;">
+    <h3 class="text-center mb-4">Login</h3>
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" name="email" class="form-control" id="email" required placeholder="Enter your email">
+        </div>
+
+        <div class="mb-3">
+            <label for="pass" class="form-label">Password</label>
+            <input type="password" name="pass" class="form-control" id="pass" required
+                placeholder="Enter your password">
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+</div>
+
+{% endblock %}

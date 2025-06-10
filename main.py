@@ -20,19 +20,6 @@ def users():
     users = fetch_users()
     return render_template('members.html',users = users)
 
-@app.route('/add_users', methods = ['GET','POST'])
-def add_users():
-    if request.method == 'POST':
-        # user_id = request.form['uid']
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['pass']
-
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = (name,email,hashed_password)
-        insert_users(new_user)
-        return redirect(url_for('users'))
-    return render_template('members.html')
 
 
 @app.route('/campaigns')
@@ -197,7 +184,9 @@ def login():
             return redirect(url_for('register'))
         else:
             if bcrypt.check_password_hash(user[3],password):
-                session['email'] = email
+                session['user_id'] = user[0]  # id
+                session['email'] = user[2]    # email
+                session['role'] = user[4]     # role 
                 flash("Logged in successfully","success")
                 return redirect(url_for('home'))
             else:
