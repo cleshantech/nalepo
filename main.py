@@ -194,11 +194,19 @@ def login():
                 return redirect(url_for('login'))
     return render_template('login.html')
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.route('/logout')
 def logout():
     session.pop('email',None)
     flash("Logged out successfully","info")
     return redirect(url_for('login'))
+
+@app.route('/animation')
+def animation():
+    return render_template('animation.html')
 
 app.run(debug=True)
 
