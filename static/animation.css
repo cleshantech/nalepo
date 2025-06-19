@@ -4,7 +4,7 @@
     background-color: aqua;
     font-size: 5em;
     text-align: center;
-    animation-name: slideRight;
+    animation-name: slideLeft;
     animation-duration: 2s;
     overflow: hidden;
     margin-left: 100px;
@@ -17,7 +17,7 @@
     background-color: aqua;
     font-size: 5em;
     text-align: center;
-    animation-name: slideLeft;
+    animation-name: slideRight;
     animation-duration: 2s;
     overflow: hidden;
     /* margin-left: 100px; */
@@ -31,4 +31,27 @@
 
 @keyframes slideRight{
     to{transform: translateX(300%);}
+}
+
+body{
+    background-color: black;
+    color: white;
+}
+
+.cards{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+}
+
+.card{
+    width: 40%;
+    font-size: 24px;
+    margin: 50px 10px;
+    border: 1px solid white;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
