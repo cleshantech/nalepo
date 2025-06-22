@@ -1,6 +1,6 @@
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 
-from database import fetch_blogs,fetch_campaigns,fetch_contact,fetch_donation,fetch_eventreg,fetch_events,fetch_payments,fetch_users,fetch_volunteers,insert_volunteers,insert_blogs,insert_campaigns,insert_contact,insert_donations,insert_event_registration,insert_events,insert_payments,insert_users,check_user
+from database import fetch_blogs,fetch_campaigns,fetch_contact,fetch_donation,fetch_eventreg,fetch_events,fetch_payments,fetch_users,fetch_volunteers,insert_volunteers,insert_blogs,insert_campaigns,insert_contact,insert_donations,insert_event_registration,insert_events,insert_payments,insert_users,check_user,conn
 
 from flask_bcrypt import Bcrypt
 
@@ -125,13 +125,14 @@ def blogs():
 @app.route('/add_blog', methods = ['GET','POST'])
 def add_blog():
     if request.method == 'POST':
-        user_id = request.form['uid']
+        user_id = session.get('uid')
         title = request.form['title']
         content = request.form['content']
         new_blog = (user_id,title,content)
         insert_blogs(new_blog)
         flash("Blog added successfully","success")
         return redirect(url_for('blogs')) 
+    return render_template('addblog.html')
 
 @app.route('/contact')
 def contact():
@@ -200,13 +201,62 @@ def about():
 
 @app.route('/logout')
 def logout():
-    session.pop('email',None)
-    flash("Logged out successfully","info")
+    session.clear()  # 🧹 removes ALL session data: email, role, user_id, etc.
+    flash("Logged out successfully", "info")
     return redirect(url_for('login'))
+
 
 @app.route('/animation')
 def animation():
     return render_template('animation.html')
+
+@app.route('/blog/<int:blog_id>')
+def blog_detail(blog_id):
+    cur = conn.cursor()
+    cur.execute("SELECT title, content, published_at FROM blogs WHERE blog_id = %s", (blog_id,))
+    blog = cur.fetchone()
+    cur.close()
+    return render_template('blog_detail.html', blog=blog)
+
+@app.route('/delete_blog/<int:blog_id>')
+def delete_blog(blog_id):
+    cur = conn.cursor()
+    cur.execute("DELETE FROM blogs WHERE blog_id = %s", (blog_id,))
+    conn.commit()
+    cur.close()
+    flash("Blog deleted successfully", "warning")
+    return redirect(url_for('blogs'))
+
+
+@app.route('/edit_blog_title/<int:blog_id>', methods=['GET', 'POST'])
+def edit_blog_title(blog_id):
+    if session.get('role') != 'admin':
+        flash("Unauthorized access", "danger")
+        return redirect(url_for('blogs'))
+    ...
+
+
+@app.route('/edit_blog/<int:blog_id>', methods=['GET', 'POST'])
+def edit_blog(blog_id):
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        new_title = request.form['title']
+        new_content = request.form['content']
+        cur.execute("UPDATE blogs SET title=%s, content=%s WHERE blog_id=%s",
+                    (new_title, new_content, blog_id))
+        conn.commit()
+        cur.close()
+        flash("Blog updated successfully", "success")
+        return redirect(url_for('blogs'))
+
+    # GET - Load blog data into form
+    cur.execute("SELECT title, content FROM blogs WHERE blog_id=%s", (blog_id,))
+    blog = cur.fetchone()
+    cur.close()
+    return render_template('edit_blog.html', blog=blog, blog_id=blog_id)
+
+
 
 app.run(debug=True)
 

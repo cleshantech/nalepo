@@ -42,9 +42,17 @@ def fetch_eventreg():
     return eventreg
 
 def fetch_blogs():
-    cur.execute('select * from blogs;')
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT blog_id, user_id, title, content, 
+        TO_CHAR(published_at, 'Month DD, YYYY') 
+        FROM blogs ORDER BY published_at DESC
+    """)
     blogs = cur.fetchall()
+    cur.close()
     return blogs
+
+
 
 def fetch_contact():
     cur.execute('select * from contact;')

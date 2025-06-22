@@ -1,37 +1,31 @@
 {% extends "base.html" %}
 {% block title %} Home Page {% endblock%}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+{% endblock %}
+
 
 {% block content %}
 
-Home page
 
+<!-- Hero Section -->
+<header class="hero-section d-flex align-items-center justify-content-center text-white text-center">
+  <div class="overlay"></div>
+  <div class="hero-content">
+    <h1 style="font-family: cursive;" class="display-5 fw-bold py-2">Nalepo Organization</h1>
+    <h2 style="font-size: 25px; font-family: sans-serif;" class="fw-semibold mb-4 text-highlight">
+      Empowering lives, restoring hope, and building a better tomorrow<br> through compassion and community-driven action.
+    </h2>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="#" class="btn btn-success px-4 py-2 fw-semibold but1" data-aos="slide-right" data-aos-delay="100" data-aos-duration="1000">Donate</a>
+      <a href="#" class="btn btn-outline-light px-4 py-2 fw-semibold but1" data-aos="slide-left" data-aos-delay="100" data-aos-duration="1000">Volunteer</a>
+    </div>
+  </div>
+</header>
 
-<!-- <div data-aos="fade-left" class="d-inline">
-    <h2>Our Impact</h2>
-    <p>We’ve helped over 10,000 families with access to clean water...</p>
-</div>
+</body>
+</html>
 
-<div data-aos="fade-left" class="d-inline">
-    <h2>Our Impact</h2>
-    <p>We’ve helped over 10,000 families with access to clean water...</p>
-</div>
-<div data-aos="fade-left">
-    <h2>Our Impact</h2>
-    <p>We’ve helped over 10,000 families with access to clean water...</p>
-</div>
-<div data-aos="fade-left">
-    <h2>Our Impact</h2>
-    <p>We’ve helped over 10,000 families with access to clean water...</p>
-</div>
-<div data-aos="fade-left">
-    <h2>Our Impact</h2>
-    <p>We’ve helped over 10,000 families with access to clean water...</p>
-</div> -->
-
-<div class="justify-content-center" style="margin-left: 50px;">
-    <button style="width: 200px;" data-aos="slide-right" class="btn btn-primary">left</button> <button style="width: 200px;" data-aos="slide-left"
-        class="btn btn-primary-light">right</button>
-</div>
 
 {% endblock %}
