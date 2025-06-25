@@ -6,21 +6,55 @@ from flask_bcrypt import Bcrypt
 
 from functools import wraps
 
+from flask_mail import Mail, Message
+
 app = Flask(__name__)
 app.secret_key = 'kkjghj'
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'levy4star@gmail.com'
+app.config['MAIL_PASSWORD'] = 'znve iqmn dtln arto'
+
+mail = Mail(app)
 
 bcrypt = Bcrypt(app)
 
 @app.route('/')
 def home():
     cur = conn.cursor()
+
+    # Fetch 3 latest blogs
     cur.execute("""
         SELECT blog_id, title, content, TO_CHAR(published_at, 'Month DD, YYYY') 
         FROM blogs ORDER BY published_at DESC LIMIT 3
     """)
     recent_blogs = cur.fetchall()
+
+    # Fetch 3 upcoming or latest events
+    cur.execute("""
+        SELECT event_id, title, description, TO_CHAR(created_at, 'Month DD, YYYY') 
+        FROM events ORDER BY event_date DESC LIMIT 3
+    """)
+    recent_events = cur.fetchall()
+
+    # Fetch 3 latest campaigns
+    cur.execute("""
+        SELECT campaign_id, title, description, TO_CHAR(created_at, 'Month DD, YYYY') 
+        FROM campaigns ORDER BY created_at DESC LIMIT 3
+    """)
+    recent_campaigns = cur.fetchall()
+
     cur.close()
-    return render_template('index.html', blogs=recent_blogs)
+
+    return render_template(
+        'index.html',
+        blogs=recent_blogs,
+        events=recent_events,
+        campaigns=recent_campaigns
+    )
+
 
 
 @app.route('/users')
@@ -47,6 +81,8 @@ def add_campaigns():
         insert_campaigns(new_campaign)
         flash("Campaign added Successfully","success")
         return redirect(url_for('campaigns'))
+    
+    return render_template('addcampaign.html')
 
 
 
@@ -106,24 +142,26 @@ def events():
     events = fetch_events()
     return render_template('events.html',events = events)
 
-@app.route('/add event', methods = ['GET','POST'])
-def add_events():
+@app.route('/add_event', methods = ['GET','POST'])
+def add_event():
     if request.method == 'POST':
         title = request.form['title']
         description = request.form['desc']
         event_date = request.form['edate']
         location = request.form['location']
         new_event = (title,description,event_date,location)
-        insert_blogs(new_event)
+        insert_events(new_event)
         flash("Event added successfully","success")
         return redirect(url_for('events'))
+    
+    return render_template('addevent.html')
 
-@app.route('/event_registration')
-def event_registration():
-    event_registration = fetch_eventreg()
-    events = fetch_events()
-    users = fetch_users()
-    return render_template('event_registration.html',event_registration = event_registration, events = events, users = users)
+# @app.route('/event_registration')
+# def event_registration():
+#     event_registration = fetch_eventreg()
+#     events = fetch_events()
+#     users = fetch_users()
+#     return render_template('event_registration.html',event_registration = event_registration, events = events, users = users)
 
 @app.route('/blogs')
 def blogs():
@@ -147,6 +185,8 @@ def contact():
     contact = fetch_contact
     return render_template('contact.html',contact = contact)
 
+
+# conatct us route
 @app.route('/give_feedback')
 def give_feedback():
     if request.method =='POST':
@@ -172,7 +212,7 @@ def register():
         if not user:
             # Check if there's already an approved admin
             if role == 'admin' and not admin_exists():
-                status = 'approved'  # first admin is auto-approved ✅
+                status = 'approved'  # first admin is auto-approved 
             else:
                 status = 'pending'
 
@@ -243,6 +283,7 @@ def logout():
 def animation():
     return render_template('animation.html')
 
+# details route
 @app.route('/blog/<int:blog_id>')
 def blog_detail(blog_id):
     cur = conn.cursor()
@@ -250,6 +291,24 @@ def blog_detail(blog_id):
     blog = cur.fetchone()
     cur.close()
     return render_template('blog_detail.html', blog=blog)
+
+@app.route('/event/<int:event_id>')
+def event_detail(event_id):
+    cur = conn.cursor()
+    cur.execute("SELECT title, description, event_date, location, created_at FROM events WHERE event_id = %s", (event_id,))
+    event = cur.fetchone()
+    cur.close()
+    return render_template('event_detail.html', event = event)
+
+@app.route('/campaign/<int:campaign_id>')
+def campaign_detail(campaign_id):
+    cur = conn.cursor()
+    cur.execute("SELECT title, description, goal_amount, start_date, end_date, created_at FROM campaigns WHERE campaign_id = %s", (campaign_id,))
+    campaign = cur.fetchone()
+    cur.close()
+    return render_template('campaign_detail.html', campaign = campaign)
+
+# delete routes
 
 @app.route('/delete_blog/<int:blog_id>')
 def delete_blog(blog_id):
@@ -260,12 +319,44 @@ def delete_blog(blog_id):
     flash("Blog deleted successfully", "warning")
     return redirect(url_for('blogs'))
 
+@app.route('/delete_event/<int:event_id>')
+def delete_event(event_id):
+    cur = conn.cursor()
+    cur.execute("DELETE FROM events WHERE event_id = %s", (event_id,))
+    conn.commit()
+    cur.close()
+    flash("Event deleted succesfully", "warning")
+    return redirect(url_for('events'))
+
+@app.route('/delete_campaign/<int:campaign_id>')
+def delete_campaign(campaign_id):
+    cur = conn.cursor()
+    cur.execute("DELETE FROM campaigns WHERE campaign_id = %s", (campaign_id,))
+    conn.commit()
+    cur.close()
+    flash("Campaign deleted successfully", "warning")
+    return redirect(url_for('campaigns'))
+
 
 @app.route('/edit_blog_title/<int:blog_id>', methods=['GET', 'POST'])
 def edit_blog_title(blog_id):
     if session.get('role') != 'admin':
         flash("Unauthorized access", "danger")
         return redirect(url_for('blogs'))
+    ...
+
+@app.route('/edit_event_title/<int:event_id>', methods=['GET', 'POST'])
+def edit_event_title(event_id):
+    if session.get('role') != 'admin':
+        flash("Unauthorized access", "danger")
+        return redirect(url_for('events'))
+    ...
+
+@app.route('/edit_campaign_title/<int:campaign_id>', methods=['GET', 'POST'])
+def edit_campaign_title(campaign_id):
+    if session.get('role') != 'admin':
+        flash("Unauthorized access", "danger")
+        return redirect(url_for('campaigns'))
     ...
 
 
@@ -282,42 +373,127 @@ def edit_blog(blog_id):
         cur.close()
         flash("Blog updated successfully", "success")
         return redirect(url_for('blogs'))
-
-    # GET - Load blog data into form
+    
+     # GET - Load blog data into form
     cur.execute("SELECT title, content FROM blogs WHERE blog_id=%s", (blog_id,))
     blog = cur.fetchone()
     cur.close()
     return render_template('edit_blog.html', blog=blog, blog_id=blog_id)
+    
+@app.route('/edit_event/<int:event_id>', methods=['GET', 'POST'])
+def edit_event(event_id):
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['desc']
+        event_date = request.form['edate']
+        location = request.form['location']
+        cur.execute("UPDATE blogs SET title=%s, content=%s WHERE blog_id=%s",
+                    (title, description, event_date, location))
+        conn.commit()
+        cur.close()
+        flash("Event updated successfully", "success")
+        return redirect(url_for('events'))
+    
+    cur.execute("SELECT title, description, event_date, location FROM events WHERE event_id=%s", (event_id,))
+    event = cur.fetchone()
+    cur.close()
+    return render_template('edit_event.html', event = event, event_id = event_id)
+
+@app.route('/edit_campaign/<int:campaign_id>', methods=['GET', 'POST'])
+def edit_campaign(campaign_id):
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['desc']
+        goal_amount = request.form['goal']
+        start_date = request.form['start']
+        end_date = request.form['end']
+        cur.execute("UPDATE blogs SET title=%s, content=%s WHERE blog_id=%s",
+                    (title, description, campaign_id, goal_amount, start_date, end_date))
+        conn.commit()
+        cur.close()
+        flash("Campaign updated successfully", "success")
+        return redirect(url_for('campaigns'))
+    
+    cur.execute("SELECT title, description, goal_amount, start_date, end_date FROM campaigns WHERE campaign_id=%s", (campaign_id))
+    campaign = cur.fetchone()
+    cur.close()
+    return render_template('edit_campaign.html', campaign = campaign, campaign_id = campaign_id)
+
+
+   
 
 # route for manage users
 
 @app.route('/manage_users')
 def manage_users():
     if session.get('role') != 'admin':
-        flash("Access denied", "danger")
+        flash("Unauthorized access", "danger")
         return redirect(url_for('home'))
 
     cur = conn.cursor()
-    cur.execute("SELECT id, fullname, email, role, status FROM users")
+    # Only show pending ADMIN users
+    cur.execute("SELECT user_id, name, email, role FROM users WHERE status = 'pending' AND role = 'admin'")
     users = cur.fetchall()
     cur.close()
     return render_template('manage_users.html', users=users)
 
 
+
+
 # route to approve admin
 
-@app.route('/approve_admin/<int:user_id>')
-def approve_admin(user_id):
+@app.route('/approve_user/<int:user_id>')
+def approve_user(user_id):
     if session.get('role') != 'admin':
-        flash("Unauthorized", "danger")
+        flash("Unauthorized access", "danger")
         return redirect(url_for('home'))
 
     cur = conn.cursor()
-    cur.execute("UPDATE users SET status='approved' WHERE id=%s", (user_id,))
+    cur.execute("UPDATE users SET status = 'approved' WHERE user_id = %s RETURNING email, name", (user_id,))
+    user = cur.fetchone()
     conn.commit()
     cur.close()
-    flash("Admin approved successfully", "success")
+
+    if user:
+        # Send email
+        msg = Message("Your Admin Account has been Approved",
+                      sender='your_email@gmail.com',
+                      recipients=[user[0]])
+        msg.body = f"Hello {user[1]},\n\nYour admin account has been approved. You can now log in and access the admin panel.\n\nRegards,\nNalepo Team"
+        mail.send(msg)
+
+    flash("Admin approved and notified via email.", "success")
     return redirect(url_for('manage_users'))
+
+# rejecting user route
+
+@app.route('/reject_user/<int:user_id>')
+def reject_user(user_id):
+    if session.get('role') != 'admin':
+        flash("Unauthorized access", "danger")
+        return redirect(url_for('home'))
+
+    cur = conn.cursor()
+    cur.execute("DELETE FROM users WHERE user_id = %s RETURNING email, name", (user_id,))
+    user = cur.fetchone()
+    conn.commit()
+    cur.close()
+
+    if user:
+        msg = Message("Admin Registration Rejected",
+                      sender='your_email@gmail.com',
+                      recipients=[user[0]])
+        msg.body = f"Hello {user[1]},\n\nUnfortunately, your admin account request has been rejected.\nIf this is a mistake, contact the Nalepo admin team.\n\nRegards,\nNalepo Team"
+        mail.send(msg)
+
+    flash("Admin rejected and removed from system.", "info")
+    return redirect(url_for('manage_users'))
+
+
 
 # Auto - approving the first admin if no one exists!
 def admin_exists():

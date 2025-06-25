@@ -12,7 +12,12 @@ def fetch_users():
     return users
 
 def fetch_campaigns():
-    cur.execute('select * from campaigns;')
+    cur = conn.cursor()
+    cur.execute("""
+            SELECT campaign_id, title,description,goal_amount,start_date,end_date,
+            TO_CHAR(created_at, 'Month DD, YYYY')
+            FROM campaigns ORDER BY created_at DESC
+            """)
     campaigns = cur.fetchall()
     return campaigns
 
@@ -32,7 +37,12 @@ def fetch_volunteers():
     return volunteers
 
 def fetch_events():
-    cur.execute('select * from events;')
+    cur = conn.cursor()
+    cur.execute("""
+                SELECT event_id,title,description,event_date,location,
+                TO_CHAR(created_at, 'Month DD, YYYY')
+                FROM events ORDER BY created_at DESC
+            """)
     events = cur.fetchall()
     return events
 

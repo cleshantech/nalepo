@@ -28,7 +28,7 @@
 </header>
 
 
-
+<!-- publications Display -->
 <div class="container my-5 bb">
   <h2 class="text-center mb-5 fw-bold text-dark" style="letter-spacing: 1px;">Latest From Our Publications</h2>
 
@@ -56,6 +56,70 @@
   <div class="text-center mt-4">
     <a href="/blogs" class="btn btn-primary px-5 py-2 rounded-pill fw-semibold"
       style="box-shadow: 0 4px 10px rgba(0,0,0,0.1);">View All Blogs</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Campaigns Display -->
+<div class="container my-5 bb">
+  <h2 class="text-center mb-5 fw-bold text-dark" style="letter-spacing: 1px;">Latest From Our Campaigns</h2>
+
+  <div class="row g-4">
+    {% for campaign in campaigns %}
+    <div class="col-md-4">
+      <div class="card blog-card h-100 border-0 shadow-sm rounded-4">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title fw-semibold text-primary">{{ campaign[1] }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted small">{{ campaign[3] }}</h6>
+            <p class="card-text text-dark mt-3">{{ campaign[2][:180] }}{% if campaign[2]|length > 180 %}...{% endif %}</p>
+          </div>
+          <div class="mt-auto">
+            <a href="/campaign/{{ campaign[0] }}" class="btn btn-outline-primary btn-sm fw-semibold px-4"
+              style="transition: 0.3s;">Read More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if campaign|length == 3 %}
+  <div class="text-center mt-4">
+    <a href="/campaigns" class="btn btn-primary px-5 py-2 rounded-pill fw-semibold"
+      style="box-shadow: 0 4px 10px rgba(0,0,0,0.1);">View All Campaigns</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Events Display -->
+<div class="container my-5 bb">
+  <h2 class="text-center mb-5 fw-bold text-dark" style="letter-spacing: 1px;">Latest From Our Events</h2>
+
+  <div class="row g-4">
+    {% for event in events %}
+    <div class="col-md-4">
+      <div class="card blog-card h-100 border-0 shadow-sm rounded-4">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title fw-semibold text-primary">{{ event[1] }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted small">{{ event[3] }}</h6>
+            <p class="card-text text-dark mt-3">{{ event[2][:180] }}{% if event[2]|length > 180 %}...{% endif %}</p>
+          </div>
+          <div class="mt-auto">
+            <a href="/event/{{ event[0] }}" class="btn btn-outline-primary btn-sm fw-semibold px-4"
+              style="transition: 0.3s;">Read More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if events|length == 3 %}
+  <div class="text-center mt-4">
+    <a href="/events" class="btn btn-primary px-5 py-2 rounded-pill fw-semibold"
+      style="box-shadow: 0 4px 10px rgba(0,0,0,0.1);">View All Events</a>
   </div>
   {% endif %}
 </div>

@@ -1,0 +1,18 @@
+
+
+{% extends "base.html" %}
+{% block title %} Event Page {% endblock%}
+
+
+{% block content %}
+
+
+<div class="container mt-5">
+    <h2>{{ event[0] }}</h2>
+    <p class="text-muted">{{ event[2].strftime('%B %d, %Y') }}</p>
+    <hr>
+    <p style="white-space: pre-line;">{{ event[1] }}</p>
+    <a href="/events" class="btn btn-secondary mt-3">Back to Events</a>
+  </div>
+
+  {% endblock %}

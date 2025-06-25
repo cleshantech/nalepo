@@ -167,7 +167,7 @@
                             <li><a class="dropdown-item" href="/about#vision">Vision & Mission</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link hover-link" href="/about">What We Do</a></li>
+                    <li class="nav-item"><a class="nav-link hover-link" href="/campaigns">What We Do</a></li>
                     <li class="nav-item"><a class="nav-link hover-link" href="/blogs">Publications</a></li>
                     <li class="nav-item"><a class="nav-link hover-link" href="/events">Events</a></li>
                     <li class="nav-item"><a class="nav-link hover-link" href="/contact">Contact</a></li>
@@ -185,15 +185,15 @@
 
     <!-- === Third Navbar (Admin Only) === -->
     {% if session.get('role') == 'admin' %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm container">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm container" style="background-color: darkslategrey;">
         <div class="container">
             <span class="navbar-text text-white fw-semibold me-3">Admin Panel</span>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/users">Manage Users</a></li>
+                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/manage_users">Manage Users</a></li>
                     <li class="nav-item"><a class="nav-link hover-link text-white" href="/view_donations">View
                             Donations</a></li>
-                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_campaign">Add Campaign</a>
+                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_campaigns">Add Campaign</a>
                     </li>
                     <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_event">Add Event</a></li>
                     <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_blog">Add Publication</a>
