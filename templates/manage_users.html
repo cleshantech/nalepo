@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %} Login Page {% endblock%}
+
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Registered Users</h2>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user[1] }}</td>
+          <td>{{ user[2] }}</td>
+          <td>{{ user[3] }}</td>
+          <td>
+            {% if user[4] == 'approved' %}
+              <span class="badge bg-success">Approved</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if user[3] == 'admin' and user[4] != 'approved' %}
+            <a href="{{ url_for('approve_admin', user_id=user[0]) }}" class="btn btn-success btn-sm">Approve</a>
+            {% else %}
+            <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  
+{% endblock %}

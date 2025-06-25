@@ -13,7 +13,15 @@ bcrypt = Bcrypt(app)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT blog_id, title, content, TO_CHAR(published_at, 'Month DD, YYYY') 
+        FROM blogs ORDER BY published_at DESC LIMIT 3
+    """)
+    recent_blogs = cur.fetchall()
+    cur.close()
+    return render_template('index.html', blogs=recent_blogs)
+
 
 @app.route('/users')
 def users():
@@ -150,7 +158,7 @@ def give_feedback():
         flash("Feedback submitted successfully","success")
         return redirect(url_for('contact'))
     
-@app.route('/register', methods = ['GET','POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         name = request.form['name']
@@ -162,17 +170,31 @@ def register():
         user = check_user(email)
 
         if not user:
-            new_user = (name,email,hashed_password,role)
+            # Check if there's already an approved admin
+            if role == 'admin' and not admin_exists():
+                status = 'approved'  # first admin is auto-approved ✅
+            else:
+                status = 'pending'
+
+            new_user = (name, email, hashed_password, role, status)
             insert_users(new_user)
-            flash("User registered successfully, Login!","success")
+
+            if role == 'admin' and status == 'pending':
+                flash("Admin account created. Pending approval by system administrator.", "info")
+            else:
+                flash("User registered successfully. Login!", "success")
+
             return redirect(url_for('login'))
+
         else:
-            flash("User already exists, Login","error")
+            flash("User already exists. Please login.", "warning")
             return redirect(url_for('login'))
-        
+
     return render_template('register.html')
 
-@app.route('/login', methods = ['GET','POST'])
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
@@ -181,19 +203,30 @@ def login():
         user = check_user(email)
 
         if not user:
-            flash("Please register first","error")
+            flash("Please register first", "error")
             return redirect(url_for('register'))
         else:
-            if bcrypt.check_password_hash(user[3],password):
-                session['user_id'] = user[0]  # id
-                session['email'] = user[2]    # email
-                session['role'] = user[4]     # role 
-                flash("Logged in successfully","success")
+            if bcrypt.check_password_hash(user[3], password):
+                role = user[4]
+                status = user[5]  # Make sure check_user returns status as index 5
+
+                # Prevent unapproved admins
+                if role == 'admin' and status != 'approved':
+                    flash("Admin account pending approval by system administrator.", "warning")
+                    return redirect(url_for('login'))
+
+                # Allow login
+                session['user_id'] = user[0]
+                session['email'] = user[2]
+                session['role'] = role
+                flash("Logged in successfully", "success")
                 return redirect(url_for('home'))
             else:
-                flash("Wrong password. Try again","error")
+                flash("Wrong password. Try again", "error")
                 return redirect(url_for('login'))
+
     return render_template('login.html')
+
 
 @app.route('/about')
 def about():
@@ -255,6 +288,47 @@ def edit_blog(blog_id):
     blog = cur.fetchone()
     cur.close()
     return render_template('edit_blog.html', blog=blog, blog_id=blog_id)
+
+# route for manage users
+
+@app.route('/manage_users')
+def manage_users():
+    if session.get('role') != 'admin':
+        flash("Access denied", "danger")
+        return redirect(url_for('home'))
+
+    cur = conn.cursor()
+    cur.execute("SELECT id, fullname, email, role, status FROM users")
+    users = cur.fetchall()
+    cur.close()
+    return render_template('manage_users.html', users=users)
+
+
+# route to approve admin
+
+@app.route('/approve_admin/<int:user_id>')
+def approve_admin(user_id):
+    if session.get('role') != 'admin':
+        flash("Unauthorized", "danger")
+        return redirect(url_for('home'))
+
+    cur = conn.cursor()
+    cur.execute("UPDATE users SET status='approved' WHERE id=%s", (user_id,))
+    conn.commit()
+    cur.close()
+    flash("Admin approved successfully", "success")
+    return redirect(url_for('manage_users'))
+
+# Auto - approving the first admin if no one exists!
+def admin_exists():
+    cur = conn.cursor() 
+    cur.execute("SELECT COUNT(*) FROM users WHERE role = 'admin' AND status = 'approved'")
+    count = cur.fetchone()[0]
+    cur.close()
+    return count > 0
+
+
+
 
 
 

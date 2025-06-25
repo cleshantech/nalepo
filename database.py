@@ -61,7 +61,7 @@ def fetch_contact():
 
 # inserting data
 def insert_users(values):
-    insert = "insert into users(name,email,password,role)values(%s,%s,%s,%s)"
+    insert = "insert into users(name,email,password,role,status)values(%s,%s,%s,%s,%s)"
     cur.execute(insert,values)
     conn.commit()
 
