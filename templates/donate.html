@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donate Page</title>
+    <!-- Bootstrap CSS (head link) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/donate.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div style="background:#d4edda;color:#155724;padding:10px;margin:20px;border-radius:5px;">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+
+    <section class="donate-hero">
+        <h1>Your generosity can change a life today!</h1>
+        <p>Every coin goes directly into feeding, educating, and empowering those in need.</p>
+    </section>
+
+    <div class="donate-box container">
+        <h2>Want to donate?</h2>
+
+        <div class="donation-type">
+            <label class="option">
+                <input type="radio" name="donation_frequency" />
+                <span>Give Once</span>
+            </label>
+            <label class="option">
+                <input type="radio" name="donation_frequency" />
+                <span>Give Monthly</span>
+            </label>
+            <label class="option">
+                <input type="radio" name="donation_frequency" />
+                <span>Give Annually</span>
+            </label>
+        </div>
+
+        <div class="payment-section">
+            <h3>Mode of Payment</h3>
+            <div class="payment-buttons">
+                <button>M-pesa</button>
+                <button>Card</button>
+                <button>Bank Transfer</button>
+                <button>Paypal Transfer</button>
+            </div>
+        </div>
+
+        <!-- M-Pesa Form (Hidden by default) -->
+        <div id="mpesa-form" class="payment-form" style="display: none;">
+            <h4>Complete Your M-Pesa Donation</h4>
+            <form method="POST" action="/donate/mpesa">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" name="fullname" required>
+
+                <label for="phone">Phone Number (Safaricom)</label>
+                <input type="tel" id="phone" name="phone" required placeholder="e.g. 07XXXXXXXX">
+
+                <label for="amount">Amount (KES)</label>
+                <input type="number" id="amount" name="amount" required>
+
+                <button type="submit">Donate via M-Pesa</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS Bundle (body link) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const mpesaBtn = document.querySelector('.payment-buttons button:nth-child(1)');
+        const mpesaForm = document.getElementById('mpesa-form');
+
+        mpesaBtn.addEventListener('click', () => {
+            // Hide other payment forms here if you add later
+            mpesaForm.style.display = 'block';
+        });
+    </script>
+
+</body>
+
+</html>

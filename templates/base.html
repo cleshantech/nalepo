@@ -13,6 +13,8 @@
     <!-- AOS CSS -->
     <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 
     <style>
@@ -139,8 +141,7 @@
         </div>
     </nav>
 
-    <nav 
-        class="navbar navbar-expand-lg navbar-light bg-light shadow-sm nav2 ">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm nav2 ">
         <div class="container-fluid">
             <!-- Logo (Far Left) -->
             <a class="navbar-brand fw-bold me-auto" href="/">
@@ -190,10 +191,12 @@
             <span class="navbar-text text-white fw-semibold me-3">Admin Panel</span>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/manage_users">Manage Users</a></li>
+                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/manage_users">Manage Users</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link hover-link text-white" href="/view_donations">View
                             Donations</a></li>
-                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_campaigns">Add Campaign</a>
+                    <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_campaigns">Add
+                            Campaign</a>
                     </li>
                     <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_event">Add Event</a></li>
                     <li class="nav-item"><a class="nav-link hover-link text-white" href="/add_blog">Add Publication</a>

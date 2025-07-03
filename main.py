@@ -1,5 +1,13 @@
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 
+import requests
+
+from requests.auth import HTTPBasicAuth
+
+import base64
+
+from datetime import datetime
+
 from database import fetch_blogs,fetch_campaigns,fetch_contact,fetch_donation,fetch_eventreg,fetch_events,fetch_payments,fetch_users,fetch_volunteers,insert_volunteers,insert_blogs,insert_campaigns,insert_contact,insert_donations,insert_event_registration,insert_events,insert_payments,insert_users,check_user,conn
 
 from flask_bcrypt import Bcrypt
@@ -502,6 +510,40 @@ def admin_exists():
     count = cur.fetchone()[0]
     cur.close()
     return count > 0
+
+# DONATE PAGE
+
+@app.route('/donate')
+def donate():
+    return render_template('donate.html')
+
+@app.route('/donate/mpesa', methods=['POST'])
+def donate_mpesa():
+    fullname = request.form['fullname']
+    phone = request.form['phone']
+    amount = request.form['amount']
+
+    # ✅ Optional: save to database here
+    # ✅ Optional: call M-Pesa STK push here (via Safaricom Daraja API)
+
+    # Just for now, let’s confirm it worked
+    print(f"Name: {fullname}, Phone: {phone}, Amount: {amount}")
+
+    flash("Thank you for your donation! We’ll process it shortly. 🙏")
+    return redirect('/donate')
+
+
+# Initiate Mpesa Express Request
+@app.route('/pay')
+def mpesaExpress():
+    amount = request.args.get('amount')
+    phone = request.args.get('phone')
+
+    endpoint = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+    acces_token = getAccesstoken()
+    headers = {"Authorization": "Bearer %s" % acces_token }
+    timestamp = datetime.now()
+    times = Timestamp.strftime("%Y%m%d%H%M%S")
 
 
 
