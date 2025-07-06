@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: nalepo
+    runtime: python
+    buildCommand: ""
+    startCommand: gunicorn main:app
+    envVars:
+      - key: FLASK_ENV
+        value: production

@@ -534,16 +534,16 @@ def donate_mpesa():
 
 
 # Initiate Mpesa Express Request
-@app.route('/pay')
-def mpesaExpress():
-    amount = request.args.get('amount')
-    phone = request.args.get('phone')
+# @app.route('/pay')
+# def mpesaExpress():
+#     amount = request.args.get('amount')
+#     phone = request.args.get('phone')
 
-    endpoint = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
-    acces_token = getAccesstoken()
-    headers = {"Authorization": "Bearer %s" % acces_token }
-    timestamp = datetime.now()
-    times = Timestamp.strftime("%Y%m%d%H%M%S")
+#     endpoint = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+#     acces_token = getAccesstoken()
+#     headers = {"Authorization": "Bearer %s" % acces_token }
+#     timestamp = datetime.now()
+#     times = Timestamp.strftime("%Y%m%d%H%M%S")
 
 
 
