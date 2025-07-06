@@ -31,6 +31,22 @@ mail = Mail(app)
 
 bcrypt = Bcrypt(app)
 
+def init_db():
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS blogs (
+            blog_id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    cur.close()
+
+init_db()
+
+
 @app.route('/')
 def home():
     cur = conn.cursor()
