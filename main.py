@@ -31,20 +31,20 @@ mail = Mail(app)
 
 bcrypt = Bcrypt(app)
 
-def init_db():
-    cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS blogs (
-            blog_id SERIAL PRIMARY KEY,
-            title TEXT NOT NULL,
-            content TEXT NOT NULL,
-            published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    conn.commit()
-    cur.close()
+# def init_db():
+#     cur = conn.cursor()
+#     cur.execute("""
+#         CREATE TABLE IF NOT EXISTS blogs (
+#             blog_id SERIAL PRIMARY KEY,
+#             title TEXT NOT NULL,
+#             content TEXT NOT NULL,
+#             published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+#         )
+#     """)
+#     conn.commit()
+#     cur.close()
 
-init_db()
+# init_db()
 
 
 @app.route('/')
@@ -52,11 +52,11 @@ def home():
     cur = conn.cursor()
 
     # Fetch 3 latest blogs
-    cur.execute("""
-        SELECT blog_id, title, content, TO_CHAR(published_at, 'Month DD, YYYY') 
-        FROM blogs ORDER BY published_at DESC LIMIT 3
-    """)
-    recent_blogs = cur.fetchall()
+    # cur.execute("""
+    #     SELECT blog_id, title, content, TO_CHAR(published_at, 'Month DD, YYYY') 
+    #     FROM blogs ORDER BY published_at DESC LIMIT 3
+    # """)
+    # recent_blogs = cur.fetchall()
 
     # Fetch 3 upcoming or latest events
     cur.execute("""
@@ -76,7 +76,7 @@ def home():
 
     return render_template(
         'index.html',
-        blogs=recent_blogs,
+        # blogs=recent_blogs,
         events=recent_events,
         campaigns=recent_campaigns
     )
