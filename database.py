@@ -1,6 +1,12 @@
+import os
+
 import psycopg2
 
-conn = psycopg2.connect(user='postgres',password='leshan1234',host='localhost',port='5432',database='nalepo')
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+conn = psycopg2.connect(DATABASE_URL)
+
+conn = psycopg2.connect(user='nalepo_user',password='5bHGAJmRCsHOYSFjppOr7sIL2xQrPpsX',host='dpg-d1l4tqndiees73f7b3h0-a',port='5432',database='nalepo')
 
 cur = conn.cursor()
 
