@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask,render_template,request,redirect,url_for,session,flash
 
 import requests
@@ -17,7 +19,7 @@ from functools import wraps
 from flask_mail import Mail, Message
 
 app = Flask(__name__)
-app.secret_key = 'kkjghj'
+app.secret_key = os.environ.get('SECRET_KEY')
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
