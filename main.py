@@ -162,6 +162,7 @@ def add_volunteer():
         new_volunteer = (user_id,skills,availability)
         insert_volunteers(new_volunteer)
         flash("Volunteer added successfully","success")
+        return redirect(url_for('volunteers'))
 
 @app.route('/events')
 def events():
@@ -208,12 +209,12 @@ def add_blog():
 
 @app.route('/contact')
 def contact():
-    contact = fetch_contact
+    contact = fetch_contact()
     return render_template('contact.html',contact = contact)
 
 
 # conatct us route
-@app.route('/give_feedback')
+@app.route('/give_feedback', methods=['GET', 'POST'])
 def give_feedback():
     if request.method =='POST':
         name = request.form['name']
@@ -415,7 +416,7 @@ def edit_event(event_id):
         description = request.form['desc']
         event_date = request.form['edate']
         location = request.form['location']
-        cur.execute("UPDATE blogs SET title=%s, content=%s WHERE blog_id=%s",
+        cur.execute("UPDATE events SET title=%s, description=%s, event_date=%s, location=%s WHERE event_id=%s",
                     (title, description, event_date, location))
         conn.commit()
         cur.close()
@@ -437,7 +438,7 @@ def edit_campaign(campaign_id):
         goal_amount = request.form['goal']
         start_date = request.form['start']
         end_date = request.form['end']
-        cur.execute("UPDATE blogs SET title=%s, content=%s WHERE blog_id=%s",
+        cur.execute("UPDATE campaigns SET title=%s, description=%s, goal_amount=%s, start_date=%s, end_date=%s WHERE campaign_id=%s",
                     (title, description, campaign_id, goal_amount, start_date, end_date))
         conn.commit()
         cur.close()
@@ -535,23 +536,23 @@ def admin_exists():
 def donate():
     return render_template('donate.html')
 
-@app.route('/donate/mpesa', methods=['POST'])
-def donate_mpesa():
-    fullname = request.form['fullname']
-    phone = request.form['phone']
-    amount = request.form['amount']
+# @app.route('/donate/mpesa', methods=['POST'])
+# def donate_mpesa():
+#     fullname = request.form['fullname']
+#     phone = request.form['phone']
+#     amount = request.form['amount']
 
-    # ✅ Optional: save to database here
-    # ✅ Optional: call M-Pesa STK push here (via Safaricom Daraja API)
+#     # ✅ Optional: save to database here
+#     # ✅ Optional: call M-Pesa STK push here (via Safaricom Daraja API)
 
-    # Just for now, let’s confirm it worked
-    print(f"Name: {fullname}, Phone: {phone}, Amount: {amount}")
+#     # Just for now, let’s confirm it worked
+#     print(f"Name: {fullname}, Phone: {phone}, Amount: {amount}")
 
-    flash("Thank you for your donation! We’ll process it shortly. 🙏")
-    return redirect('/donate')
+#     flash("Thank you for your donation! We’ll process it shortly. 🙏")
+#     return redirect('/donate')
 
 
-# Initiate Mpesa Express Request
+# # Initiate Mpesa Express Request
 # @app.route('/pay')
 # def mpesaExpress():
 #     amount = request.args.get('amount')
